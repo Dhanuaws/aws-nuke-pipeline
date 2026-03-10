@@ -19,3 +19,47 @@ accounts:
     filters:
       S3Bucket:
         - "appsys-invi-terraform-state" # Do NOT delete the state bucket
+      IAMRole:
+        - type: glob
+          value: "AWSControlTower*"
+      IAMRolePolicyAttachment:
+        - type: glob
+          value: "AWSControlTower*"
+      IAMPolicy:
+        - type: glob
+          value: "AWSControlTower*"
+      CloudFormationStack:
+        - type: glob
+          value: "StackSet-AWSControlTower*"
+      CloudFormationStackSet:
+        - type: glob
+          value: "AWSControlTower*"
+      CloudWatchEventsRule:
+        - type: glob
+          value: "AWSControlTower*"
+      CloudWatchEventsTarget:
+        - type: glob
+          value: "ControlTower*"
+      ConfigServiceConfigRule:
+        - type: glob
+          value: "*" # Control Tower relies heavily on Config Rules
+      ConfigServiceConfigurationRecorder:
+        - type: glob
+          value: "*"
+      ConfigServiceDeliveryChannel:
+        - type: glob
+          value: "*"
+      CloudTrailTrail:
+        - type: glob
+          value: "aws-controltower*"
+      EC2VPC:
+        - property: tag:Name
+          type: contains
+          value: "AWSControlTower"
+      EC2Subnet:
+        - property: tag:Name
+          type: contains
+          value: "AWSControlTower"
+      SSMParameter:
+        - type: glob
+          value: "/aws/reference/secretsmanager/AWSControlTower*"
