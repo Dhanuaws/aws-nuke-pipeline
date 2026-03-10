@@ -1,0 +1,21 @@
+# AWS Nuke Pipeline Configuration
+
+regions:
+  - us-east-1
+  - global
+
+account-blocklist:
+  - "999999999999" # Placeholder for production account ID to avoid accidents
+
+resource-types:
+  excludes:
+    - IAMUser
+    - IAMRole
+    - IAMRolePolicyAttachment
+    - IAMPolicy
+
+accounts:
+  "320042238431": # Your AWS Account ID
+    filters:
+      S3Bucket:
+        - "appsys-invi-terraform-state" # Do NOT delete the state bucket

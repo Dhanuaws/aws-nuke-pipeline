@@ -1,0 +1,53 @@
+name: Nuke AWS Account
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_destruction:
+        description: 'Type "NUKE" to confirm resource deletion'
+        required: true
+        default: 'DRY-RUN'
+      dry_run:
+        description: 'Run with --no-dry-run flag?'
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  nuke:
+    name: Nuke AWS Infrastructure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::320042238431:role/GitHub-Role
+          aws-region: us-east-1
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Install aws-nuke
+        run: |
+          VERSION="v2.21.2"
+          wget https://github.com/rebuy-de/aws-nuke/releases/download/${VERSION}/aws-nuke-${VERSION}-linux-amd64.tar.gz
+          tar -xzf aws-nuke-${VERSION}-linux-amd64.tar.gz
+          sudo mv aws-nuke-${VERSION}-linux-amd64 /usr/local/bin/aws-nuke
+
+      - name: Run Nuke (Dry Run)
+        if: github.event.inputs.dry_run == 'true'
+        run: |
+          aws-nuke -c nuke-config.yml --no-dry-run=false
+
+      - name: Run Nuke (Actual)
+        if: github.event.inputs.dry_run == 'false' && github.event.inputs.confirm_destruction == 'NUKE'
+        run: |
+          aws-nuke -c nuke-config.yml --no-dry-run --force
