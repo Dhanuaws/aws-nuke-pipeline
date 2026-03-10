@@ -34,6 +34,10 @@ jobs:
 
       - name: Verify AWS identity
         run: aws sts get-caller-identity
+        
+      - name: Create Account Alias (for aws-nuke safety check)
+        run: |
+          aws iam create-account-alias --account-alias appsys-finx-dev-nuke-target || true
 
       - name: Install aws-nuke
         run: |
